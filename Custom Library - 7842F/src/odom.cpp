@@ -9,12 +9,12 @@ using namespace Globals;
 int d = 2;
 
 float to_rad (float degree) {
-    degree*(M_PI / 180.0);
+    return degree*(M_PI / 180.0);
 }
 
     
 
-void Odometry (float X_position = 0, float Y_position = 0, float prev_orientation_deg= 0) {
+void Odometry (float X_position, float Y_position, float prev_orientation_deg) {
 
 
 float ForwardTracker_center_distance = 3.5;
