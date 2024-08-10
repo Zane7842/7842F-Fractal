@@ -1,4 +1,3 @@
-
 #include "main.h"
 #include "odom.hpp"
 #include "globals.h"
@@ -33,7 +32,8 @@ float to_rad (float degree) {
 
 void Odometry (float X_position = 0, float Y_position = 0, float prev_orientation_deg = 0) {
 
-// Section 1: Defines the nessesary variables & updates previous values
+Forward_rotation.reset_position();
+SideWays_rotation.reset_position();
 
 float ForwardTracker_center_distance = 3.5; // Right-left distance from the tracking center to the left tracking wheel
 float SidewaysTracker_center_distance = 0.5; // Forward-backward distance from the tracking center to the back tracking wheel
@@ -49,18 +49,15 @@ float orientation_deg = imu_sensor.get_heading()+orientation_offset; // Offsets 
 
 
 while (true) {
-
   float Forward_delta = ForwardTracker_position-prev_ForwardTracker_position; // Finds the delta (change) of the ForwardTracker_position, by subtracting the previous value from its new value
   float SideWays_delta = SideWaysTracker_position-prev_SideWaysTracker_position; // Finds the delta (change) of the SideWaysTracker_position, by subtracting the previous value from its new value
   float Forward_delta_distance = (M_PI*d)*(Forward_delta / 360); // Converts position (in degrees) to distance (in inches).
   float SideWays_delta_distance = (M_PI*d)*(SideWays_delta / 360); // Converts position (in degrees) to distance (in inches).
-  prev_ForwardTracker_position=ForwardTracker_position; // Updates "previous value" of the ForwardTracker_position, to be equal to the "new" value. (prepares for the next iteration of the odom loop)
-  prev_SideWaysTracker_position=SideWaysTracker_position;// Updates "previous value" of the SideWaysTracker_position, to be equal to the "new" value. (prepares for the next iteration of the odom loop)
+  
   float orientation_rad = to_rad(orientation_deg); // Converts the "new" orientation from degrees to radiens
   float prev_orientation_rad = to_rad(prev_orientation_deg); // Converts the "previous" orientationfrom degrees to radiens
   float orientation_delta_rad = orientation_rad-prev_orientation_rad; // // Finds the delta (change) of the orientation, by subtracting the previous value from its new value
-  prev_orientation_deg=orientation_deg; // Updates "previous value" of the orientation, to be equal to the "new" value. (prepares for the next iteration of the odom loop)
-
+  
   float local_X_position; // Creates a local X cordinate variable (to be used to find the local offset)
   float local_Y_position; // Creates a local Y cordinate variable (to be used to find the local offset)
 
@@ -114,22 +111,32 @@ See the following link for more information on cartesian -> polar conversion: ht
   float X_position_delta = local_polar_length*cos(global_polar_angle);  
   float Y_position_delta = local_polar_length*sin(global_polar_angle);
 
-  X_position+=X_position_delta; //Updates new absolute X_position
-  Y_position+=Y_position_delta; //Updates new absolute Y_position
+  // Updates new absolute position
+  X_position+=X_position_delta; 
+  Y_position+=Y_position_delta; 
 
-/* 10 millisecond delay */
- pros::Task::delay(10);
+  //Updates the Previous sensor values
+  prev_ForwardTracker_position=ForwardTracker_position; 
+  prev_SideWaysTracker_position=SideWaysTracker_position;
+  prev_orientation_deg=orientation_deg;
+
+  //Prints Values to the brain screen
+  pros::lcd::print(0, "X Val: %.3f", X_position);
+  pros::lcd::print(1, "Y Val: %.3f", Y_position);
+  pros::lcd::print(2, "imu heading val: %.3f", imu_sensor.get_heading());
+
+  /* 10 millisecond delay */
+  pros::Task::delay(10);
 
       }
-
-/* Prints X and Y cordinate & orientation to the brain's screen */
-pros::lcd::print(1,"X_position %f", X_position);
-pros::lcd::print(2,"Y_position %f", Y_position);
-pros::lcd::print(3,"orientation_deg %f", orientation_deg);
 
     }
 
 }
 
+/* Prints X and Y cordinate & orientation to the brain's screen 
+pros::lcd::print(1,"X_position %f", X_position);
+pros::lcd::print(2,"Y_position %f", Y_position);
+pros::lcd::print(3,"orientation_deg %f", orientation_deg);
 
-
+*/
