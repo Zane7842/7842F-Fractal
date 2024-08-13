@@ -1,5 +1,5 @@
 #include "main.h"
-#include "odom.hpp"
+#include "Odometry.hpp"
 #include "globals.h"
 
 
@@ -27,7 +27,7 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	
+	pros::lcd::initialize();
 		
 }
 
@@ -78,7 +78,11 @@ void autonomous() {}
 void opcontrol() {
  	imu_sensor.reset();
 
-	while (true) {
+
+while (true){
+
+		Odometry({0,0},0);
+
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
@@ -88,13 +92,9 @@ void opcontrol() {
 		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
 		left_mg.move(dir - turn);                      // Sets left motor voltage
 		right_mg.move(dir + turn);                     // Sets right motor voltage
-		pros::delay(20);                               // Run for 20 ms then update
+		pros::delay(20);                                // Run for 20 ms then update
+
 	}
-
-
-
-Odometry(0,0,0);
-
 
 }
 
