@@ -123,8 +123,8 @@ position delta;
   prev_orientation_deg=orientation_deg;
 
    //Prints Values to the brain screen
-  pros::lcd::set_text(0, "X Val: " + std::to_string(Forward_delta));
-  //pros::lcd::set_text(1, "Y Val: " + std::to_string(local.y));
+  pros::lcd::set_text(0, "X Val: " + std::to_string(global.x));
+  pros::lcd::set_text(1, "Y Val: " + std::to_string(global.y));
   pros::lcd::set_text(2, "imu heading val: " + std::to_string(imu_sensor.get_heading()));
 
   /* 10 millisecond delay */
