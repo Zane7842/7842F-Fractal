@@ -1,5 +1,5 @@
 #include "main.h"
-#include "Odometry.hpp"
+#include "Odometry.h"
 #include "globals.h"
 
 
@@ -83,7 +83,7 @@ void opcontrol() {
 Odom odom;
 odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
 odom.set_physical_distances(3.5, 4, 2);
-pros::Task odomTask(update_position);
+pros::Task odomTask(odom.update_position); 
 
 
 while (true){
