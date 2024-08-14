@@ -31,7 +31,10 @@ float to_rad (float degree) {
  */
 
 
-void Odometry (position global, float prev_orientation_deg) {
+void updateOdom_fn(void *param){
+
+position global = {0,0};
+float prev_orientation_deg = 0;
 
 Forward_rotation.reset_position();
 SideWays_rotation.reset_position();
@@ -48,6 +51,8 @@ float ForwardTracker_position = Forward_rotation.get_position(); // Stores new e
 float SideWaysTracker_position = SideWays_rotation.get_position(); // Stores new orientation via the imu_sensor's .get_heading function
 float orientation_deg = imu_sensor.get_heading()+orientation_offset; // Offsets the heading so it is field centred
 
+position local;
+
 while (true){
 
   float Forward_delta = ForwardTracker_position-prev_ForwardTracker_position; // Finds the delta (change) of the ForwardTracker_position, by subtracting the previous value from its new value
@@ -58,14 +63,12 @@ while (true){
   float orientation_rad = to_rad(orientation_deg); // Converts the "new" orientation from degrees to radiens
   float prev_orientation_rad = to_rad(prev_orientation_deg); // Converts the "previous" orientationfrom degrees to radiens
   float orientation_delta_rad = orientation_rad-prev_orientation_rad; // // Finds the delta (change) of the orientation, by subtracting the previous value from its new value
-  
-  position local;
 
 /*
 If the robot's change in orientation is equal to 0 (no change in orientation since last cycle):
    * Simplifies the calculation of the local offset
 */
-  if (orientation_delta_rad == 0) {
+  if (fabs(orientation_delta_rad) == 0) {
     local.x = SideWays_delta_distance;
     local.y = Forward_delta_distance;
   }
@@ -128,7 +131,7 @@ position delta;
   pros::lcd::set_text(2, "imu heading val: " + std::to_string(imu_sensor.get_heading()));
 
   /* 10 millisecond delay */
-  pros::Task::delay(10);
+  pros::delay(10);
 
     }
 
