@@ -83,7 +83,8 @@ void opcontrol() {
 Odom odom;
 odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
 odom.set_physical_distances(3.5, 4, 2);
-pros::Task odomTask([&odom](void* params) -> void { odom.update_position(params); }); 
+odom.start();
+//pros::Task odomTask([&odom](void* params) -> void { odom.update_position(params); }); 
 
 
 while (true){
