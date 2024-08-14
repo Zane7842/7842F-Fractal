@@ -9,6 +9,11 @@ using namespace Globals; //Allows access rotation sensors and IMU_sensor
 /* Function to convert degrees to radiens */
 float to_rad (float degree) {return degree*(M_PI / 180.0);}
 
+void Odom::start() {
+
+  pros::Task(this->update_position);
+}
+
 void Odom::set_physical_distances(float ForwardTracker_center_distance, float SidewaysTracker_center_distance, int TrackerWheel_diameter){
   this->TrackerWheel_diameter = TrackerWheel_diameter;
   this->ForwardTracker_center_distance = ForwardTracker_center_distance;

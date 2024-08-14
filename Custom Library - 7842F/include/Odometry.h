@@ -4,6 +4,8 @@
 
 class Odom
 {
+public:
+  void start();
 private:
   int TrackerWheel_diameter;
   float ForwardTracker_center_distance;
