@@ -13,5 +13,5 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 pros:: Imu imu_sensor(13);
 
 pros::Rotation Forward_rotation(12);
-pros::Rotation SideWays_rotation(1);
+pros::Rotation Sideways_rotation(1);
 }

@@ -2,11 +2,23 @@
 #include "main.h"
 
 
-struct position {
-
-float x, y;
-
+class Odom
+{
+private:
+  int TrackerWheel_diameter;
+  float ForwardTracker_center_distance;
+  float SidewaysTracker_center_distance;
+  float ForwardTracker_position;
+  float SidewaysTracker_position;
+public:
+  float X_position;
+  float Y_position;
+  float orientation_deg;
+  float orientation_offset;
+  void set_position(float X_position, float Y_position, float orientation_deg, float ForwardTracker_position, float SidewaysTracker_position);
+  void update_position(void *param);
+  void set_physical_distances(float ForwardTracker_center_distance, float SidewaysTracker_center_distance, int TrackerWheel_diameter);
 };
 
-void updateOdom_fn(void *param);
+
 

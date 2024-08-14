@@ -6,11 +6,22 @@
 
 using namespace Globals; //Allows access rotation sensors and IMU_sensor
 
-int d = 2; // Diameter of the tracking wheels (2")
-
 /* Function to convert degrees to radiens */
-float to_rad (float degree) {
-    return degree*(M_PI / 180.0);
+float to_rad (float degree) {return degree*(M_PI / 180.0);}
+
+void Odom::set_physical_distances(float ForwardTracker_center_distance, float SidewaysTracker_center_distance, int TrackerWheel_diameter){
+  this->TrackerWheel_diameter = TrackerWheel_diameter;
+  this->ForwardTracker_center_distance = ForwardTracker_center_distance;
+  this->SidewaysTracker_center_distance = SidewaysTracker_center_distance;
+}
+
+void Odom::set_position(float X_position, float Y_position, float orientation_deg, float ForwardTracker_position, float SidewaysTracker_position){
+  this->ForwardTracker_position = ForwardTracker_position;
+  this->SidewaysTracker_position = SidewaysTracker_position;
+  this->X_position = X_position;
+  this->Y_position = Y_position;
+  this->orientation_deg = orientation_deg;
+  this->orientation_offset = orientation_deg;
 }
 
 /*
@@ -30,104 +41,62 @@ float to_rad (float degree) {
    - (SideWaysTracker) uses the (SideWays_rotation) sensor
  */
 
-
-void updateOdom_fn(void *param){
-
-position global = {0,0};
-float prev_orientation_deg = 0;
-
-Forward_rotation.reset_position();
-SideWays_rotation.reset_position();
-
-float ForwardTracker_center_distance = 3.5; // Right-left distance from the tracking center to the left tracking wheel
-float SidewaysTracker_center_distance = 0.5; // Forward-backward distance from the tracking center to the back tracking wheel
-float orientation_offset = prev_orientation_deg; // Orientation_offset = how much the robots heading is offset from 0
-
-/*Stores the current (soon to be a "previous value") encoder values in local variables*/
-float prev_ForwardTracker_position = 0;
-float prev_SideWaysTracker_position = 0; 
-
-float ForwardTracker_position = Forward_rotation.get_position(); // Stores new encoder values via the rotation sensor's .get_position function
-float SideWaysTracker_position = SideWays_rotation.get_position(); // Stores new orientation via the imu_sensor's .get_heading function
-float orientation_deg = imu_sensor.get_heading()+orientation_offset; // Offsets the heading so it is field centred
-
-position local;
+void Odom::update_position(void *param){
 
 while (true){
+float ForwardTracker_position = Forward_rotation.get_position(); // Stores new encoder values via the rotation sensor's .get_position function
+float SidewaysTracker_position = Sideways_rotation.get_position(); // Stores new orientation via the imu_sensor's .get_heading function
+float orientation_deg = imu_sensor.get_heading()+orientation_offset;
 
-  float Forward_delta = ForwardTracker_position-prev_ForwardTracker_position; // Finds the delta (change) of the ForwardTracker_position, by subtracting the previous value from its new value
-  float SideWays_delta = SideWaysTracker_position-prev_SideWaysTracker_position; // Finds the delta (change) of the SideWaysTracker_position, by subtracting the previous value from its new value
-  float Forward_delta_distance = (M_PI*d)*(Forward_delta / 360); // Converts position (in degrees) to distance (in inches).
-  float SideWays_delta_distance = (M_PI*d)*(SideWays_delta / 360); // Converts position (in degrees) to distance (in inches).
+   // this-> always refers to the old version of the variable, so subtracting this->x from x gives delta x.
+  float Forward_delta = ForwardTracker_position-this->ForwardTracker_position;
+  float Sideways_delta = SidewaysTracker_position-this->SidewaysTracker_position;
+  float Forward_delta_distance = (M_PI*TrackerWheel_diameter)*(Forward_delta / 360); // Converts position (in degrees) to distance (in inches).
+  float Sideways_delta_distance = (M_PI*TrackerWheel_diameter)*(Sideways_delta / 360); // Converts position (in degrees) to distance (in inches).
+  float orientation_rad = to_rad(orientation_deg);
+  float prev_orientation_rad = to_rad(this->orientation_deg);
+  float orientation_delta_rad = orientation_rad-prev_orientation_rad;
   
-  float orientation_rad = to_rad(orientation_deg); // Converts the "new" orientation from degrees to radiens
-  float prev_orientation_rad = to_rad(prev_orientation_deg); // Converts the "previous" orientationfrom degrees to radiens
-  float orientation_delta_rad = orientation_rad-prev_orientation_rad; // // Finds the delta (change) of the orientation, by subtracting the previous value from its new value
+  
+  float local_X_position;
+  float local_Y_position;
 
-/*
-If the robot's change in orientation is equal to 0 (no change in orientation since last cycle):
-   * Simplifies the calculation of the local offset
-*/
-  if (fabs(orientation_delta_rad) == 0) {
-    local.x = SideWays_delta_distance;
-    local.y = Forward_delta_distance;
+  if (orientation_delta_rad == 0) {
+    local_X_position = Sideways_delta;
+    local_Y_position = Forward_delta;
+  } else {
+    local_X_position = (2*sin(orientation_delta_rad/2))*((Sideways_delta/orientation_delta_rad)+SidewaysTracker_center_distance); 
+    local_Y_position = (2*sin(orientation_delta_rad/2))*((Forward_delta/orientation_delta_rad)+ForwardTracker_center_distance);
   }
 
-/*
-Otherwise, calculates the local offset using the following equation: (LINK to image to be put here)
-Scaler multiplication = Everything inside the vector [] is multiplied by EVERYTHING outise of the vector
-The vector has a size of 1x2 (top is X, bottom is Y)
-In the code below, the vector is split up between the two local cordinates
-*/
-  else {
-    local.x = (2*sin(orientation_delta_rad/2))*((SideWays_delta_distance/orientation_delta_rad)+SidewaysTracker_center_distance); 
-    local.y = (2*sin(orientation_delta_rad/2))*((Forward_delta_distance/orientation_delta_rad)+ForwardTracker_center_distance);
-  }
-
-  float local_polar_angle; 
+  float local_polar_angle;
   float local_polar_length;
 
-/*
-If both the local X and Y position are equal to zero: 
-   * Simplifies the calculation of the local_polar angle and length
-*/
-  if (local.x == 0 && local.y == 0){
+  if (local_X_position == 0 && local_Y_position == 0){
     local_polar_angle = 0;
     local_polar_length = 0;
+  } else {
+    local_polar_angle = atan2(local_Y_position, local_X_position); 
+    local_polar_length = sqrt(pow(local_X_position, 2) + pow(local_Y_position, 2)); 
   }
 
-/*
-Otherwise, calculates the following conversion:
-local_polar_angle = tan-1(y / x)
-local_polar_length = √(x^2 + y^2)
+  float global_polar_angle = local_polar_angle - prev_orientation_rad - (orientation_delta_rad/2);
 
-Note: the c++ term "atan2" acts as tan-1, along with pproviding corretion for negative input values.
-See the following link for more information on cartesian -> polar conversion: https://www.mathsisfun.com/polar-cartesian-coordinates.html
-*/
-  else {
-    local_polar_angle = atan2(local.y, local.x); 
-    local_polar_length = sqrt(pow(local.x, 2) + pow(local.y, 2)); 
-  }
+  float X_position_delta = local_polar_length*cos(global_polar_angle); 
+  float Y_position_delta = local_polar_length*sin(global_polar_angle);
 
-  float global_polar_angle = local_polar_angle - prev_orientation_rad - (orientation_delta_rad/2); 
+  X_position+=X_position_delta;
+  Y_position+=Y_position_delta;
+}
 
-position delta;
-  delta.x = local_polar_length*cos(global_polar_angle);  
-  delta.y = local_polar_length*sin(global_polar_angle);
-
-  // Updates new absolute position
-  global.x+=delta.x; 
-  global.y+=delta.y; 
-
-
-  //Updates the Previous sensor values
-  prev_ForwardTracker_position=ForwardTracker_position; 
-  prev_SideWaysTracker_position=SideWaysTracker_position;
-  prev_orientation_deg=orientation_deg;
+  //Updates the previous sensor values
+  this->ForwardTracker_position=ForwardTracker_position;
+  this->SidewaysTracker_position=SidewaysTracker_position;
+  this->orientation_deg=orientation_deg;
 
    //Prints Values to the brain screen
-  pros::lcd::set_text(0, "X Val: " + std::to_string(global.x));
-  pros::lcd::set_text(1, "Y Val: " + std::to_string(global.y));
+  pros::lcd::set_text(0, "X Val: " + std::to_string(X_position));
+  pros::lcd::set_text(1, "Y Val: " + std::to_string(Y_position));
   pros::lcd::set_text(2, "imu heading val: " + std::to_string(imu_sensor.get_heading()));
 
   /* 10 millisecond delay */
@@ -135,7 +104,7 @@ position delta;
 
     }
 
-}
+
 
 
 /* Prints X and Y cordinate & orientation to the brain's screen 

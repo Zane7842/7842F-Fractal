@@ -77,8 +77,14 @@ void autonomous() {}
  */
 void opcontrol() {
  	imu_sensor.reset();
+    Forward_rotation.reset_position();
+    Sideways_rotation.reset_position();
 
-pros::Task odomTask(updateOdom_fn);
+Odom odom;
+odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
+odom.set_physical_distances(3.5, 4, 2);
+pros::Task odomTask(update_position);
+
 
 while (true){
 
