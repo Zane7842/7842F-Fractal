@@ -9,10 +9,12 @@ using namespace Globals; //Allows access rotation sensors and IMU_sensor
 /* Function to convert degrees to radiens */
 float to_rad (float degree) {return degree*(M_PI / 180.0);}
 
-void Odom::start() {
+//void Odom::start() {
 
-  pros::Task(this->update_position);
-}
+  //pros::Task(this->update_position);
+
+  //pros::Task([this](){this->update_position;});
+//}
 
 void Odom::set_physical_distances(float ForwardTracker_center_distance, float SidewaysTracker_center_distance, int TrackerWheel_diameter){
   this->TrackerWheel_diameter = TrackerWheel_diameter;
@@ -46,7 +48,7 @@ void Odom::set_position(float X_position, float Y_position, float orientation_de
    - (SideWaysTracker) uses the (SideWays_rotation) sensor
  */
 
-void Odom::update_position(void *param){
+void Odom::update_position(void*){
 
 while (true){
 float ForwardTracker_position = Forward_rotation.get_position(); // Stores new encoder values via the rotation sensor's .get_position function
@@ -106,6 +108,7 @@ float orientation_deg = imu_sensor.get_heading()+orientation_offset;
 
   /* 10 millisecond delay */
   pros::delay(10);
+
 
     }
 
