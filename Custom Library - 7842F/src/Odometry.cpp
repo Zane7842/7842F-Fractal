@@ -9,6 +9,7 @@ using namespace Globals; //Allows access rotation sensors and IMU_sensor
 /* Function to convert degrees to radiens */
 float to_rad (float degree) {return degree*(M_PI / 180.0);}
 
+//ignore the following comments:
 //void Odom::start() {
 
   //pros::Task(this->update_position);
