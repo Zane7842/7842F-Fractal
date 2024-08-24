@@ -29,6 +29,13 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 		
+Odom odom;
+	pros::Task task {[&]{
+  odom.update_position();
+}};
+
+odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
+odom.set_physical_distances(3.5, 4, 2);
 }
 
 /**
@@ -80,16 +87,17 @@ void opcontrol() {
     Forward_rotation.reset_position();
     Sideways_rotation.reset_position();
 
-Odom odom;
-odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
-odom.set_physical_distances(3.5, 4, 2);
-
-pros::Task OdomTask(odom.update_position);
 
 
 
+//pros::Task OdomTask(update_position_fn);
 
-//pros::Task odomTask([&odom](void* params) -> void { odom.update_position(params); }); 
+
+
+
+
+
+//pros::Task odomTask([&odom](void* params) -> void { odom.update_position_fn(params); }); 
 
 
 while (true){
