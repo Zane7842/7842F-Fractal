@@ -28,7 +28,12 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-		
+
+ imu_sensor.reset();
+ Forward_rotation.reset_position();
+ Sideways_rotation.reset_position();
+
+
 Odom odom;
 	pros::Task task {[&]{
   odom.update_position();
@@ -83,26 +88,10 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
- 	imu_sensor.reset();
-    Forward_rotation.reset_position();
-    Sideways_rotation.reset_position();
-
-
-
-
-//pros::Task OdomTask(update_position_fn);
-
-
-
-
-
-
-//pros::Task odomTask([&odom](void* params) -> void { odom.update_position_fn(params); }); 
-
+ 	
+   
 
 while (true){
-
-		
 
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
