@@ -35,13 +35,18 @@ void initialize() {
 
 
 Odom odom;
+ 
+ while (true){
+
 	pros::Task task {[&]{
   odom.update_position();
 }};
 
 odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
 odom.set_physical_distances(3.5, 4, 2);
+	}
 }
+
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
