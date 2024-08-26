@@ -29,22 +29,7 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 
- imu_sensor.reset();
- Forward_rotation.reset_position();
- Sideways_rotation.reset_position();
 
-
-Odom odom;
- 
- while (true){
-
-	pros::Task task {[&]{
-  odom.update_position();
-}};
-
-odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
-odom.set_physical_distances(3.5, 4, 2);
-	}
 }
 
 
@@ -93,7 +78,15 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
- 	
+ 	 imu_sensor.reset();
+ Forward_rotation.reset_position();
+ Sideways_rotation.reset_position();
+
+//using namespace Odometry;
+ // Am I creating two instances with same name (as I alreay created an instance called odom in odometry.cpp)???
+odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
+odom.set_physical_distances(3.5, 4, 2);
+odom.start(); //this can be outside of a while true loop right?
    
 
 while (true){
