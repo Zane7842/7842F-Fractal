@@ -1,5 +1,6 @@
 #pragma ounce
 #include "main.h"
+#include "globals.h"
 
 
 
@@ -22,4 +23,4 @@ public:
   void update_position(); //task?
   void set_physical_distances(float ForwardTracker_center_distance, float SidewaysTracker_center_distance, int TrackerWheel_diameter);
 };
-
+extern Odom odom;

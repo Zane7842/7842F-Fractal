@@ -4,8 +4,6 @@
 #include "globals.h"
 #include <string>
 
-Odom odom;
-
 using namespace Globals; //Allows access rotation sensors and IMU_sensor
 
 
@@ -24,7 +22,9 @@ void Odom::start(){
  
 //lambda
 pros::Task task {[&]{
+  
   odom.update_position(); 
+  
 }};
 
 
@@ -137,3 +137,5 @@ pros::lcd::print(3,"orientation_deg %f", orientation_deg);
 */
 
 //} odometry namespace
+
+Odom odom;

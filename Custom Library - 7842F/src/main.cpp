@@ -4,6 +4,7 @@
 
 
 using namespace Globals;
+
 /**
  * A callback function for LLEMU's center button.
  *
@@ -84,10 +85,11 @@ void opcontrol() {
 
 //using namespace Odometry;
  // Am I creating two instances with same name (as I alreay created an instance called odom in odometry.cpp)???
+ 
 odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
 odom.set_physical_distances(3.5, 4, 2);
 odom.start(); //this can be outside of a while true loop right?
-   
+
 
 while (true){
 
