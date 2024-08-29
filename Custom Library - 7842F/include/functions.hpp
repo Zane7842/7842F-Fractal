@@ -1,1 +1,1 @@
-#pragma ounce
+#pragma once

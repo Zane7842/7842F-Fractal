@@ -1,4 +1,4 @@
-#pragma ounce
+#pragma once
 #include "main.h"
 #include "globals.h"
 

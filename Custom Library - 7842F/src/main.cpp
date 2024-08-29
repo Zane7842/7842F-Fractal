@@ -80,13 +80,14 @@ void autonomous() {}
  */
 void opcontrol() {
  	 imu_sensor.reset();
+	 pros::delay(2000);
  Forward_rotation.reset_position();
  Sideways_rotation.reset_position();
 
 //using namespace Odometry;
  // Am I creating two instances with same name (as I alreay created an instance called odom in odometry.cpp)???
  
-odom.set_position(0, 0, 0, Forward_rotation.get_position(), Sideways_rotation.get_position());
+odom.set_position(1, 1, 1, Forward_rotation.get_position(), Sideways_rotation.get_position());
 odom.set_physical_distances(3.5, 4, 2);
 odom.start(); //this can be outside of a while true loop right?
 

@@ -2,6 +2,8 @@
 #include "pros/imu.hpp"
 #include "pros/rotation.hpp"
 #include "globals.h"
+#include <cmath> // For std::isnan
+#include <string> // For std::to_string
 
 
 namespace Globals {
@@ -14,4 +16,8 @@ pros:: Imu imu_sensor(13);
 
 pros::Rotation Forward_rotation(12);
 pros::Rotation Sideways_rotation(1);
+
+
+
+
 }

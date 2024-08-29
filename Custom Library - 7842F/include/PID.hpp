@@ -1,4 +1,4 @@
-#pragma ounce
+#pragma ouce
 #include "main.h"
 
 /**
