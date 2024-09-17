@@ -2,8 +2,6 @@
 #include "main.h"
 #include "globals.h"
 
-
-
 class Odom
 {
 public:

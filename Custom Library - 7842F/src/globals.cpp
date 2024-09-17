@@ -17,7 +17,4 @@ pros:: Imu imu_sensor(13);
 pros::Rotation Forward_rotation(12);
 pros::Rotation Sideways_rotation(1);
 
-
-
-
 }

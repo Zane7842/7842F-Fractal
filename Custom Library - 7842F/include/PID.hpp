@@ -1,4 +1,4 @@
-#pragma ouce
+#pragma once
 #include "main.h"
 
 /**
@@ -25,12 +25,14 @@ public:
   float time_spent_running = 0;
   float update_period = 10;
 
+//Constructors
   PID(float error, float kp, float ki, float kd, float starti);
 
   PID(float error, float kp, float ki, float kd, float starti, float settle_error, float settle_time, float timeout);
 
   PID(float error, float kp, float ki, float kd, float starti, float settle_error, float settle_time, float timeout, float update_period);
 
+//compute member function
   float compute(float error);
 
   bool is_settled();

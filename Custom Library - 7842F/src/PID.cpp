@@ -1,28 +1,6 @@
 #include "main.h"
 #include "PID.hpp"
 
-
-/*EZ PID
-double PID::compute(double current) {
-  error = target - current;
-  derivative = error - prev_error;
-
-  if (constants.ki != 0) {
-    if (fabs(error) < constants.start_i)
-      integral += error;
-
-    if (util::sgn(error) != util::sgn(prev_error) && reset_i_sgn)
-      integral = 0;
-  }
-
-  output = (error * constants.kp) + (integral * constants.ki) + (derivative * constants.kd);
-
-  prev_error = error;
-
-  return output;
-}
-*/
-
 //Jar PID: https://github.com/JacksonAreaRobotics/JAR-Template/blob/main/src/JAR-Template/PID.cpp
 
 /**
@@ -91,7 +69,7 @@ float settle_error, float settle_time, float timeout) :
  */
 
 PID::PID(float error, float kp, float ki, float kd, float starti, 
-float settle_error, float settle_time, float timeout, float update_period) :
+float settle_error, float settle_time, float timeout, float update_period) : //Member Initializer Lists
   error(error),
   kp(kp),
   ki(ki),
@@ -157,3 +135,24 @@ bool PID::is_settled(){
   }
   return(false);
 }
+
+/*EZ PID
+double PID::compute(double current) {
+  error = target - current;
+  derivative = error - prev_error;
+
+  if (constants.ki != 0) {
+    if (fabs(error) < constants.start_i)
+      integral += error;
+
+    if (util::sgn(error) != util::sgn(prev_error) && reset_i_sgn)
+      integral = 0;
+  }
+
+  output = (error * constants.kp) + (integral * constants.ki) + (derivative * constants.kd);
+
+  prev_error = error;
+
+  return output;
+}
+*/
